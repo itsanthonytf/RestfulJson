@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cupcake Page</title>
+</head>
+<body>
+    <h1>Cupcake List</h1>
+    <ul id="cupcake-list"></ul>
+    <form id="cupcake-form">
+        <input type="text" id="cupcake-name" placeholder="Enter Cupcake Name">
+        <button type="submit">Add Cupcake</button>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Get cupcakes from API and add to the page
+            axios.get('/api/cupcakes')
+                .then(function(response) {
+                    response.data.forEach(function(cupcake) {
+                        $('#cupcake-list').append('<li>' + cupcake.name + '</li>');
+                    });
+                });
+
+            // Handle form submission
+            $('#cupcake-form').submit(function(event) {
+                event.preventDefault();
+                let cupcakeName = $('#cupcake-name').val();
+                axios.post('/api/cupcakes', { name: cupcakeName })
+                    .then(function(response) {
+                        $('#cupcake-list').append('<li>' + cupcakeName + '</li>');
+                        $('#cupcake-name').val('');
+                    });
+            });
+        });
+    </script>
+</body>
+</html>
