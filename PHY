@@ -1,0 +1,132 @@
+# Create a virtual environment
+python3 -m venv myenv
+source myenv/bin/activate
+
+# Install Flask
+pip install Flask
+
+# Initialize Git repository
+git init
+
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+class Cupcake(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    flavor = db.Column(db.String, nullable=False)
+    size = db.Column(db.String, nullable=False)
+    rating = db.Column(db.Float, nullable=False)
+    image = db.Column(db.String, nullable=False, default='https://tinyurl.com/demo-cupcake')
+
+from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+
+# Sample cupcake data
+cupcakes = [
+    {"id": 1, "flavor": "Chocolate", "size": "Medium", "rating": 5, "image": "choco.jpg"},
+    {"id": 2, "flavor": "Vanilla", "size": "Small", "rating": 4, "image": "vanilla.jpg"}
+]
+
+# Route to get all cupcakes
+@app.route('/api/cupcakes', methods=['GET'])
+def get_all_cupcakes():
+    return jsonify({'cupcakes': cupcakes})
+
+# Route to get a single cupcake by id
+@app.route('/api/cupcakes/<int:cupcake_id>', methods=['GET'])
+def get_cupcake(cupcake_id):
+    cupcake = next((cupcake for cupcake in cupcakes if cupcake['id'] == cupcake_id), None)
+    if cupcake:
+        return jsonify({'cupcake': cupcake})
+    else:
+        return jsonify({'error': 'Cupcake not found'}), 404
+
+# Route to create a new cupcake
+@app.route('/api/cupcakes', methods=['POST'])
+def create_cupcake():
+    data = request.get_json()
+    new_cupcake = {
+        'id': cupcakes[-1]['id'] + 1,
+        'flavor': data['flavor'],
+        'size': data['size'],
+        'rating': data['rating'],
+        'image': data['image']
+    }
+    cupcakes.append(new_cupcake)
+    return jsonify({'cupcake': new_cupcake}), 201
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+
+cupcakes = [
+    {"id": 1, "flavor": "Chocolate", "size": "Medium", "rating": 5, "image": "choco.jpg"},
+    {"id": 2, "flavor": "Vanilla", "size": "Small", "rating": 4, "image": "vanilla.jpg"}
+]
+
+@app.route('/api/cupcakes/<int:cupcake_id>', methods=['PATCH'])
+def update_cupcake(cupcake_id):
+    for cupcake in cupcakes:
+        if cupcake['id'] == cupcake_id:
+            cupcake['flavor'] = request.json.get('flavor')
+            cupcake['size'] = request.json.get('size')
+            cupcake['rating'] = request.json.get('rating')
+            cupcake['image'] = request.json.get('image')
+            return jsonify({"cupcake": cupcake})
+    return jsonify({"error": "Cupcake not found"}), 404
+
+from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+
+cupcakes = [
+    {"id": 1, "flavor": "Chocolate", "size": "Medium", "rating": 5, "image": "choco.jpg"},
+    {"id": 2, "flavor": "Vanilla", "size": "Small", "rating": 4, "image": "vanilla.jpg"}
+]
+
+@app.route('/api/cupcakes/<int:cupcake_id>', methods=['PATCH'])
+def update_cupcake(cupcake_id):
+    for cupcake in cupcakes:
+        if cupcake['id'] == cupcake_id:
+            cupcake['flavor'] = request.json.get('flavor')
+            cupcake['size'] = request.json.get('size')
+            cupcake['rating'] = request.json.get('rating')
+            cupcake['image'] = request.json.get('image')
+            return jsonify({"cupcake": cupcake})
+    return jsonify({"error": "Cupcake not found"}), 404
+
+@app.route('/api/cupcakes/<int:cupcake_id>', methods=['DELETE'])
+def delete_cupcake(cupcake_id):
+    for index, cupcake in enumerate(cupcakes):
+        if cupcake['id'] == cupcake_id:
+            del cupcakes[index]
+            return jsonify({"message": "Deleted"})
+    return jsonify({"error": "Cupcake not found"}), 404
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+def test_patch_route(client):
+    response = client.patch('/api/resource/1', json={'key': 'value'})
+    assert response.status_code == 200
+
+def test_delete_route(client):
+    response = client.delete('/api/resource/1')
+    assert response.status_code == 204
+
+from flask import Flask, render_template, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/')
+def cupcake_page():
+    return render_template('cupcake.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
